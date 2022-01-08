@@ -115,6 +115,13 @@ module M1
   def self.self_return2
     self
   end
+
+  module M3
+    def self.aaa
+      puts "have access in M3: #{ABC}"
+    end
+  end
+
 end
 
 module M2
@@ -127,9 +134,6 @@ module M2
   end
 
   self
-end
-
-module M1::M3
 end
 
 class C
@@ -155,3 +159,4 @@ puts D::ABC
 # wouldn't working
 # puts M1::M3::ABC
 
+M1::M3.aaa
