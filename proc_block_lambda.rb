@@ -102,6 +102,7 @@ puts "\ntest4:"
 p12 = proc { |a, b| puts "#{a}, #{b}, sum = #{a + b}" }
 [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]].map(&p12)
 
+# one element [a, b] NOT transformed to 2 parameters a, b
 puts "\ntest5:"
 l11 = lambda { |a| puts "#{a}" }
 [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]].map(&l11)
