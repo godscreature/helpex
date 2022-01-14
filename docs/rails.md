@@ -1,7 +1,7 @@
 # RAILS HELPEX
+[На головну](../README.md)
 
-## ActriveRecord
-
+## ActiveRecord
 * `destroy` vs `delete`
   * `delete`
     * просто намагається виконати `DELETE` запит до бази
@@ -34,7 +34,6 @@
   * скопи
 
 ## Rails design patterns
-
 * Service
   * відповідає лише за одну річ
 * Value object
@@ -60,7 +59,6 @@
   * схожі на Value object - надати значення для неіснуючих записів, типу обробка empty values
 
 ## RSpec
-
 * `let` и `let!` - позволяет присваивать результат возврата блока переменной
   * эти переменные видны только в текущем `describe`
   * в последующих `let` можно использовать переменные из предыдущих
@@ -74,7 +72,6 @@
   * `expect(SecondService).to receive(:call)` - мокає SecondService і перевіряє чи викликається, якщо ні - ексепшн
 
 ## Installation flow
-
 * Resources
   * https://rvm.io/
   * https://gorails.com/setup/ubuntu/20.04#ruby-rvm
@@ -112,4 +109,3 @@
 * Cleanup/recompile frontend
   * `bin/rails assets:clobber`
   * `bin/rails webpacker:compile`
-

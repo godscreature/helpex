@@ -14,6 +14,7 @@ class << a
 end
 
 class << a
+  # Це називається 'singleton method'
   def bye
     puts 'go away'
   end

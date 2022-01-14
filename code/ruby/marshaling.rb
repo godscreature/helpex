@@ -1,3 +1,5 @@
+# Marshaling - це серіалізація-десеріалізація
+
 hello_world = 'hello world!'
 serialized_string = Marshal.dump(hello_world)
 
