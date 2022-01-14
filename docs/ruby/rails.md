@@ -1,5 +1,5 @@
 # RAILS HELPEX
-[На головну](../README.md)
+[На головну](../../README.md)
 
 ## ActiveRecord
 * `destroy` vs `delete`

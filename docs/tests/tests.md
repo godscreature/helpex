@@ -1,5 +1,5 @@
 # TESTS HELPEX
-[На головну](../README.md)
+[На головну](../../README.md)
 
 ## Загальне
 * unit tests
