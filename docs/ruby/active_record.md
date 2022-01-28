@@ -325,7 +325,7 @@
     * `has_many :users, through: :user_books`
   * UserBook:
     * `belongs_to :user`
-    * `belongs_to book`
+    * `belongs_to :book`
 * також потрібна для настройки ярликів через вкладені зв'язки `has_many`:
   * Document
     * `has_many :sections`
