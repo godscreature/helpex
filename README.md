@@ -8,4 +8,8 @@
 
 ### [Rails](docs/ruby/rails.md)
 
+### [RSpec](docs/ruby/rspec.md)
+
+### [SQL](docs/sql/sql.md)
+
 ### [Tests](docs/tests/tests.md)
