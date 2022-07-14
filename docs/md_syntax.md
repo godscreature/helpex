@@ -1,14 +1,14 @@
-# MD syntax
+# Md syntax
 [На головну](../README.md)
 
 
 ## Break line
-* use 3 minuses
+* пишемо 3 мінуси
 ---
 
 
 ## Code
-* use quotes `nano`
+* пишемо лапки `nano`
 
 
 ## Code block
@@ -18,7 +18,7 @@
 >> code in code
 
 
-## Code blocks
+## Code block
     <title>Should start from 2 tabs</title>
 
 ## Code block + highlighting
@@ -45,27 +45,23 @@ puts markdown.to_html
 
 ## Emoji
 * Tent :tent: and :joy:
-* [List of emoji codes](https://gist.github.com/rxaviers/7360908)
+* [Список кодів](https://gist.github.com/rxaviers/7360908)
 
 
 ## Font
-* This is *italic* font
-* This is **bold** font 
-* This is ***italic and bold*** font
-* This is ~~strikethrough~~ font
+* Це *курсив*
+* Це **жирний** 
+* Це ***курсив і жирний***
+* Це ~~перекреслений~~
 
 
 ## Headers
-# Hi
-## Hi
-### Hi
-#### Hi
-##### Hi
-###### Hi
-
-
-## Highlight
-* I need to highlight these ==very important words==
+# Привіт
+## Привіт
+### Привіт
+#### Привіт
+##### Привіт
+###### Привіт
 
 
 ## Images

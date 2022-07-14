@@ -1,6 +1,6 @@
 # HELPEX
 
-### [Md syntax](docs/syntax.md)
+### [Md syntax](docs/md_syntax.md)
 
 ### [Programming](docs/programming.md)
 
@@ -12,4 +12,4 @@
 
 ### [SQL](docs/sql/index.md)
 
-### [Tests](docs/tests/index.md)
+### [Testing](docs/testing.md)
