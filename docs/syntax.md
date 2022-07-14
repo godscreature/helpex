@@ -36,11 +36,16 @@
     "age": "100"
 }
 ```
+```ruby
+require 'redcarpet'
+markdown = Redcarpet.new("Hello World!")
+puts markdown.to_html
+```
 
 
 ## Emoji
-
-Tent :tent: and :joy:
+* Tent :tent: and :joy:
+* [List of emoji codes](https://gist.github.com/rxaviers/7360908)
 
 
 ## Font
@@ -57,6 +62,10 @@ Tent :tent: and :joy:
 #### Hi
 ##### Hi
 ###### Hi
+
+
+## Highlight
+* I need to highlight these ==very important words==
 
 
 ## Images
