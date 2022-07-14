@@ -1,5 +1,5 @@
 # Md syntax
-[На головну](../README.md)
+[На головну](/README.md)
 
 
 ## Break line
