@@ -1,7 +1,7 @@
 # Ruby
 [На головну](/README.md)
 
-## [Active record](/docs/ruby/active_record.md)
+## [Active record](active_record.md)
 
 ## [Rails](docs/ruby/rails.md)
 

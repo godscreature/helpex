@@ -1,5 +1,5 @@
 # RUBY HELPEX
-[На головну](../../README.md)
+[На головну](/README.md)
 
 ## Типи даних
 * NilClass

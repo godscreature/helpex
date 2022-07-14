@@ -1,5 +1,5 @@
 # RUBY SPEC HELPEX
-[На головну](../../README.md)
+[На головну](/README.md)
 
 ## Install
 * виконати `bundler add rspec-rails`

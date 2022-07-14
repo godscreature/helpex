@@ -1,5 +1,5 @@
 # RAILS HELPEX
-[На головну](../../README.md)
+[На головну](/README.md)
 
 ## Rails design patterns
 * Service

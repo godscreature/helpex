@@ -6,6 +6,8 @@
 
 ## [Ruby](docs/ruby/index.md)
 
+## [Active record](docs/ruby/active_record.md)
+
 ### [Rails](docs/ruby/rails.md)
 
 ### [RSpec](docs/ruby/rspec.md)

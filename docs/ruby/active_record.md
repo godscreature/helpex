@@ -1,5 +1,6 @@
 ## ACTIVE RECORD HELPEX
-[На головну](../../README.md)
+[На головну](/README.md)
+[На Ruby](index.md)
 
 ## `destroy` vs `delete`
 * `delete`
