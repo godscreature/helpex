@@ -1,19 +1,71 @@
 # MD syntax
 [На головну](../README.md)
 
+
+## Break line
+* use 3 minuses
+---
+
+
 ## Code
-* > code
-  >
-  > next line in code
-  >> code in code
+* use quotes `nano`
+
+
+## Code block
+> code
+> 
+> next line in code
+>> code in code
+
+
+## Code blocks
+    <title>Should start from 2 tabs</title>
+
+## Code block + highlighting
+```
+{
+    "first_name": "Bob",
+    "last_name": "Dilan",
+    "age": "100"
+}
+```
+```json
+{
+    "first_name": "Bob",
+    "last_name": "Dilan",
+    "age": "100"
+}
+```
+
+
+## Emoji
+
+Tent :tent: and :joy:
+
 
 ## Font
-* This is *italic* font 
+* This is *italic* font
 * This is **bold** font 
 * This is ***italic and bold*** font
+* This is ~~strikethrough~~ font
+
 
 ## Headers
-* This is h1-h6: # - ###### and left empty line before and after
+# Hi
+## Hi
+### Hi
+#### Hi
+##### Hi
+###### Hi
+
+
+## Images
+![title of image](../assets/image001.jpg)
+
+
+## Link
+* [Lol](https://google.com)
+
 
 ## List numbered
 1. First
@@ -22,27 +74,22 @@
     1. Third.First
     2. Third.Second
 
+
 ## List unnumbered
 - sdfip.
 - sdfsdf.
-    - sdlkfjh
-    - sdlkfjasasdf
+  - sdlkfjh
+  - sdlkfjasasdf
 
-## Code blocks
-* 8 spaces on the begin of string, empty line before and after
 
-        <title>Should start from 2 tabs</title>
+## Table and alignment
+| Syntax | Description | Test |
+|:-------|:-----------:|-----:|
+| Header |    Title    |   Ok |
+| Lol    |  Something  |  Box |
 
-## Images
-* ![title of image](path/to/image.png)
 
-## Code
-* use quotes `nano`
-* Double quotes ``Use `code` in your markdown file``
-
-## Link
-* [Lol](https://google.com)
-
-## Break line
-* use 3 minuses
----
+## Task list
+- [x] Write the press release
+- [ ] Update the website
+- [ ] Contact the media

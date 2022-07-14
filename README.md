@@ -4,12 +4,12 @@
 
 ### [Programming](docs/programming.md)
 
-### [Ruby](docs/ruby/ruby.md)
+### [Ruby](docs/ruby/index.md)
 
-### [Rails](docs/ruby/rails.md)
+### [Rails](docs/ruby/index.md)
 
-### [RSpec](docs/ruby/rspec.md)
+### [RSpec](docs/ruby/index.md)
 
-### [SQL](docs/sql/sql.md)
+### [SQL](docs/sql/index.md)
 
-### [Tests](docs/tests/tests.md)
+### [Tests](docs/tests/index.md)
