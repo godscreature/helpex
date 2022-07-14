@@ -64,6 +64,14 @@ puts markdown.to_html
 ###### Привіт
 
 
+## Header link
+* Робиться як звичний лінк, але url пишеться з самого заголовка:
+  * Lowercase
+  * Пробіли, крапки заміняються на мінус
+  * Кілька мінусів підряд - заміняються на 1 мінус
+  * Наприклад: `My header` -> `#my-header`
+
+
 ## Images
 ![title of image](../assets/image001.jpg)
 

@@ -1,4 +1,5 @@
 # Ruby
+[На головну](../README.md)
 
 ## [Active record](docs/ruby/active_record.md)
 
