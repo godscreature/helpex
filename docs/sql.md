@@ -1,6 +1,7 @@
 # SQL HELPEX
 [На головну](/README.md)
 
+
 ## Типи операцій
 * **DML** (Data Manipulation Language) - Команди для роботи з даними
   * SELECT
