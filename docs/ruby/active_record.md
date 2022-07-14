@@ -1,4 +1,4 @@
-## ACTIVE RECORD HELPEX
+## Active record
 [На головну](/README.md)
 
 [На Ruby](index.md)

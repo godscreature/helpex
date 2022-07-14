@@ -1,4 +1,4 @@
-# RUBY SPEC HELPEX
+# RSpec
 [На головну](/README.md)
 
 [На Ruby](index.md)

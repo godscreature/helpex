@@ -1,4 +1,4 @@
-# RUBY HELPEX
+# Ruby
 [На головну](/README.md)
 
 [На Ruby](index.md)

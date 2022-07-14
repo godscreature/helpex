@@ -1,4 +1,4 @@
-# SQL HELPEX
+# SQL
 [На головну](/README.md)
 
 
