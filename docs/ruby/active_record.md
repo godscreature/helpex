@@ -4,6 +4,28 @@
 [На Ruby](index.md)
 
 
+## ActiveRecord загальне
+* в ActiveRecord можна писати таке:
+  * асоціації
+  * валідації
+  * скопи
+* Брудний об'єкт
+  * Об'єкт стає бурдним після одного або кількох змін його атрибутів і при цьому він не був збереженим
+  * `ActiveModel::Dirty` забезпечує спосіб відстеження змін у вашому об’єкті так же, як це робить Active Record
+  * ```ruby
+    class Person
+      include ActiveModel::Dirty
+      define_attribute_methods :first_name, :last_name
+      #...
+    end
+
+    # пеервіряємо чи брудний
+    person.first_name = "First Name"
+    person.changed?
+    
+    ```
+
+
 ## `destroy` vs `delete`
 * `delete`
   * просто намагається виконати `DELETE` запит до бази
@@ -15,10 +37,11 @@
   * видаляє з бази запис
   * якщо якісь перевірки не проходять - видалення не відбувається і повертається `false`
 
+
 ## Завантаження даних асоціацій
 * `preload` - `User.preload(:posts).to_a`
   * грузить асоціації окремим реквестом
-  * але ми не можемо умови дописати до вибірки асоціацй
+  * але ми не можемо умови дописати до виборки асоціацій
 * `iuncludes` - `User.includes(:posts).where('posts.desc = "ruby is awesome"').to_a`
   * грузить асоціації окремим реквестом
   * використовує `LEFT OUTER JOIN`
@@ -29,14 +52,10 @@
   * використовує `INNER JOIN`
   * може призвести до дублювання в результатах
   * щоб запобігти дублюванню: `User.joins(:posts).select('distinct users.*').to_a`
-* Active Model Dirty
-  * Забезпечує спосіб відстеження змін у вашому об’єкті так же, як це робить Active Record
-* в ActiveRecord можна писати таке:
-  * асоціації
-  * валідації
-  * скопи
+
 
 ## Зв'язки
+
 
 ### в Ruby є 6 типів зв'язків:
 
@@ -57,27 +76,22 @@
   * `create_association!(attributes = {})` - теж саме, що і `create_association`, але дає `ActiveRecord::RecordInvalid`, якщо не проходять валідації
   * `reload_association` - загружений об'єкт попадає в кеш, шоб рефрешнути використовується цей метод
   * `association_changed?` - повертає `true`, якщо назначений новий зв'язаний об'єкт і зовнішній ключ буде оновлено при наступному зберіганні
-    * > @book.author # => #<Book author_number: 123, author_name: "John Doe">
-      >
-      > @book.author_changed? # => false`
-      >
-      > @book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
-      >
-      > @book.author_changed? # => true
-      >
-      > @book.save!
-      >
-      > @book.author_changed? # => false
-  * `association_previously_changed?` - повертає `true`, якщо пепереднє зберігання оновило зв'язок:
-    * > @book.author # => #<Book author_number: 123, author_name: "John Doe">
-      >
-      > @book.author_previously_changed? # => false
-      >
-      > @book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
-      >
-      > @book.save!
-      >
-      > @book.author_previously_changed? # => true
+    * ```ruby
+      @book.author # => #<Book author_number: 123, author_name: "John Doe">
+      @book.author_changed? # => false
+      @book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
+      @book.author_changed? # => true
+      @book.save!
+      @book.author_changed? # => false
+      ``` 
+  * `association_previously_changed?` - повертає `true`, якщо попереднє зберігання оновило зв'язок:
+    * ```ruby
+      @book.author # => #<Book author_number: 123, author_name: "John Doe">
+      @book.author_previously_changed? # => false
+      @book.author = Author.second # => #<Book author_number: 456, author_name: "Jane Smith">
+      @book.save!
+      @book.author_previously_changed? # => true
+      ``` 
 * В цьому зв'язку є такі **опції**
   * `:autosave`
     * `true` - все зберігається при збереженні основного об'єкту
@@ -113,20 +127,22 @@
 * В цьому зв'язку є такі **скоупи**
   * `where` - `belongs_to :author, -> { where active: true }`
   * `includes`
-    * можна юзать для визначення зв'язків 2го порядку, котрі мають ліниво грузитись при використанні цього зв'язку
+    * можна юзать для визначення зв'язків 2-го порядку, котрі мають ліниво грузитись при використанні цього зв'язку
     * якщо часто отримую авторів з розділів `@chapter.book.author`, то можна так:
-    *        class Chapter < ApplicationRecord
-               belongs_to :book, -> { includes :author }
-             end
-                 
-             class Book < ApplicationRecord
-               belongs_to :author
-               has_many :chapters
-             end
+    * ```ruby
+      class Chapter < ApplicationRecord
+        belongs_to :book, -> { includes :author }
+      end
 
-             class Author < ApplicationRecord
-               has_many :books
-             end
+      class Book < ApplicationRecord
+        belongs_to :author
+        has_many :chapters
+      end
+
+      class Author < ApplicationRecord
+        has_many :books
+      end      
+    ```
   * `readonly` - зв'язаний об'єкт буде тільки для читанння при отриманні через зв'язок
   * `select`
     * перевизначення SQL виразу SELECT, за замовчуванням - всі колонки
@@ -177,23 +193,25 @@
   * `:source` - визначає назву джерела зв'язку для зв'язку `has_one :through`
   * `:source_type`
     * визначає назву джерела зв'язку для зв'язку `has_one :through`, при поліморфному зв'язку
-    *     class Author < ApplicationRecord
-            has_one :book
-            has_one :hardback, through: :book, source: :format, source_type: "Hardback"
-            has_one :dust_jacket, through: :hardback
-          end
+    * ```ruby
+      class Author < ApplicationRecord
+        has_one :book
+        has_one :hardback, through: :book, source: :format, source_type: "Hardback"
+        has_one :dust_jacket, through: :hardback
+      end
 
-          class Book < ApplicationRecord
-            belongs_to :format, polymorphic: true
-          end
+      class Book < ApplicationRecord
+        belongs_to :format, polymorphic: true
+      end
 
-          class Paperback < ApplicationRecord; end
+      class Paperback < ApplicationRecord; end
 
-          class Hardback < ApplicationRecord
-            has_one :dust_jacket
-          end
+      class Hardback < ApplicationRecord
+        has_one :dust_jacket
+      end
 
-          class DustJacket < ApplicationRecord; end
+      class DustJacket < ApplicationRecord; end
+      ```
   * `:through` - визначає поєднуючу модель, через котру виконується запрос
   * `:touch`
     * якщо `true` або вказана назва атрибуту, то часові мітки `updated_at` чи `updated_on` на зв'язаному об'єкті будуть встановлені в поточний час кожного разу при збереженні або видаленні зв'язка
@@ -229,9 +247,10 @@
   * `books.find(...)` - шукає об'єкти в таблиці колекції
   * `books.where(...)`
     * шукає об'єкти в таблиці колекції, базуючись на переданих умовах, загрузка лінива - виконання SQL тільки коли звернення до об'єкту
-    * > @available_books = @author.books.where(available: true) # Поки немає ріквесту
-      >
-      > @available_book = @available_books.first # Тепер база даних буде запрошена
+    * ```ruby
+      @available_books = @author.books.where(available: true) # Поки немає ріквесту
+      @available_book = @available_books.first # Тепер база даних буде запрошена
+      ``` 
   * `books.exists?(...)` - перевіряє, чи існує об'єкт в колекції, що відповідає умовам
   * `books.build(attributes = {}, ...)`
     * повертає 1 або масив об'єктів зв'язаного типу
@@ -289,18 +308,20 @@
   * `includes`
     * можна юзать для визначення зв'язків 2го порядку, котрі мають ліниво грузитись при використанні цього зв'язку
     * якщо часто отримую авторів з розділів `@chapter.book.author`, то можна так:
-    *        class Chapter < ApplicationRecord
-               belongs_to :book, -> { includes :author }
-             end
-                 
-             class Book < ApplicationRecord
-               belongs_to :author
-               has_many :chapters
-             end
+    * ```ruby
+      class Chapter < ApplicationRecord
+        belongs_to :book, -> { includes :author }
+      end
 
-             class Author < ApplicationRecord
-               has_many :books
-             end
+      class Book < ApplicationRecord
+        belongs_to :author
+        has_many :chapters
+      end
+
+      class Author < ApplicationRecord
+        has_many :books
+      end
+      ```
   * `limit` - визначає к-сть об'єктів, що будуть вибрані через зв'язок
   * `offset` - визначає початкове зміщення для вибору об'єктів через зв'язок
   * `order`
@@ -374,9 +395,10 @@
   * `books.find(...)` - шукає об'єкти в таблиці колекції
   * `books.where(...)`
     * шукає об'єкти в таблиці колекції, базуючись на переданих умовах, загрузка лінива - виконання SQL тільки коли звернення до об'єкту
-    * > @available_books = @author.books.where(available: true) # Поки немає ріквесту
-      >
-      > @available_book = @available_books.first # Тепер база даних буде запрошена
+    * ```ruby
+      @available_books = @author.books.where(available: true) # Поки немає ріквесту
+      @available_book = @available_books.first # Тепер база даних буде запрошена
+      ```
   * `books.exists?(...)` - перевіряє, чи існує об'єкт в колекції, що відповідає умовам
   * `books.build(attributes = {}, ...)`
     * повертає 1 або масив об'єктів зв'язаного типу
@@ -411,18 +433,20 @@
   * `includes`
     * можна юзать для визначення зв'язків 2го порядку, котрі мають ліниво грузитись при використанні цього зв'язку
     * якщо часто отримую авторів з розділів `@chapter.book.author`, то можна так:
-    *        class Chapter < ApplicationRecord
-               belongs_to :book, -> { includes :author }
-             end
-                 
-             class Book < ApplicationRecord
-               belongs_to :author
-               has_many :chapters
-             end
+    * ```ruby
+      class Chapter < ApplicationRecord
+        belongs_to :book, -> { includes :author }
+      end
 
-             class Author < ApplicationRecord
-               has_many :books
-             end
+      class Book < ApplicationRecord
+        belongs_to :author
+        has_many :chapters
+      end
+
+      class Author < ApplicationRecord
+        has_many :books
+      end
+      ```
   * `limit` - визначає к-сть об'єктів, що будуть вибрані через зв'язок
   * `offset` - визначає початкове зміщення для вибору об'єктів через зв'язок
   * `order`
@@ -440,15 +464,18 @@
   * якщо основний об'єкт новий, не зебережений ще, то зв'язки не зберігаються, але автоматом збережуться при збереженні основного
   * якщо я хочу призначити об'єкт через `has_many` і не зберігати його - треба юзать `collection.build`
 
+
 ### `belongs_to` vs `has_one`
 * різниця в тому, де буде ключ, має бути в класі з `belongs_to`
 * також є структура - якщо пишемо `has_one`, то цій ентіті має щось належати
   * наприклад user<->address - юзерові належить адреса: user - `has_one`, address - `belongs_to`
 
+
 ### `has_many :through` vs `has_and_belongs_to_many`
 * в обох випадках в базі буде додаткова таблиця
 * `has_many :through` треба використовувати, якщо треба працювати з моделлю зв'язків як з окремим об'єктом
   * якісь колбеки, валідації, або додаткові атрибути
+
 
 ### Поліморфні зв'язки
 * модель може належати більше ніж одній моделі на одинарному зв'язку.
@@ -461,20 +488,24 @@
 * в даному випадку `belongs_to` шось типу інтерфейса, це може використовувати будь-яка інша модель
 * в базі реалізовано - додатковими колонками `imageable_type` та `imageable_id`
 
+
 ### Self-related
 * як наприклад категорія-підкатегорія або юзери з директор-підлеглий:
   * `has_many :subordinates, class_name: "Employee", foreign_key: "manager_id"`
   * `belongs_to :manager, class_name: "Employee", optional: true`
 * в базі маємо додати стовбець - лінк моделі на саму себе
 
+
 ### Кеш
 * методи зв'язків побудовані навколо кешованих результатів
   * `author.books` - дістане і закешує, потім це буде з кешу `author.books.size` або `author.books.empty?`
 * щоб перегрузити - треба заюзать `reload` - `author.books.reload.empty?`
 
+
 ### Схема
-* для зв'язків `belongs_to` - треба створювати звонішні ключі за необхідності
+* для зв'язків `belongs_to` - треба створювати зовнішні ключі за необхідності
 * для `has_and_belongs_to_many` - треба створювати таблицю зв'язку вручну (має бути створена без первинного ключа)
+
 
 ### Область видимості
 * якщо моделі в одному модулі - все ок
@@ -482,12 +513,14 @@
   * `has_one :account, class_name: "MyApplication::Billing::Account"`
   * `belongs_to :supplier, class_name: "MyApplication::Business::Supplier"`
 
+
 ### Двонаправленість
 * якщо все дефолтно, то ActiveRecord - сам розрізняє двосторонність зв'язку
 * але якщо є опції `:through` або `:foreign_key` - то двонаправленість не буде автоматом
 * За допомогою `:inverse_of` можна явно вказати двонаправленість
   * Author: `has_many :books, inverse_of: 'writer'`
   * Book: `belongs_to :writer, class_name: 'Author', foreign_key: 'author_id'`
+
 
 ### Колбеки розширення зв'язків
 * `before_add`
@@ -499,42 +532,50 @@
   * якщо в цьому колбеку викликається `:abort` - об'єкт не буде видалено: `throw(:abort) if limit_reached?`
 * `after_remove`
 * Ці колбеки стосуються тільки зв'язків - коли в колекції додається або видаляється об'єкт:
-  *     # Вызывает колбэк `before_add`
-        author.books << book
-        author.books = [book, book2]
+  * ```ruby
+    # Викликає колбек `before_add`
+    author.books << book
+    author.books = [book, book2]
 
-        # Не вызывает колбэк `before_add`
-        book.update(author_id: 1)
+    # Не викликає колбек `before_add`
+    book.update(author_id: 1)
+    ```
+
 
 ### Розширення зв'язку
 * за допомогою анонімних модулів:
-  *     class Author < ApplicationRecord
-          has_many :books do
-            def find_by_book_prefix(book_number)
-              find_by(category_id: book_number[0..2])
-            end
-          end
+  * ```ruby
+    class Author < ApplicationRecord
+      has_many :books do
+        def find_by_book_prefix(book_number)
+          find_by(category_id: book_number[0..2])
         end
+      end
+    end
+    ```
 * якщо розширення має бути спільним - виносимо в іменований модуль:
-  *     module FindRecentExtension
-          def find_recent
-            where("created_at > ?", 5.days.ago)
-          end
-        end
+  * ```ruby
+    module FindRecentExtension
+      def find_recent
+        where("created_at > ?", 5.days.ago)
+      end
+    end
 
-        class Author < ApplicationRecord
-          has_many :books, -> { extending FindRecentExtension }
-        end
+    class Author < ApplicationRecord
+      has_many :books, -> { extending FindRecentExtension }
+    end
 
-        class Supplier < ApplicationRecord
-          has_many :deliveries, -> { extending FindRecentExtension }
-        end
+    class Supplier < ApplicationRecord
+      has_many :deliveries, -> { extending FindRecentExtension }
+    end
+    ```
   * розширення можуть ссилатися на внутрішні методи виданих об'єктів
     * `proxy_association.owner` - повертає об'єкт, в котрому об'явлений зв'язок
     * `proxy_association.reflection` - повертає об'єкт reflection, що описує зв'язок
     * `proxy_association.target` - повертає:
       * зв'язаний об'єкт для `belongs_to` чи `has_one`
       * колекцію зв'язаних об'єктів для `has_many` чи `has_and_belongs_to_many`
+
 
 ### Наслідування з однією таблицею (Single Table Inheritance)
 * Створюємо модель Vehicle, в ній буде колонка `type` - в БД буде збережена модель в цій колонці
