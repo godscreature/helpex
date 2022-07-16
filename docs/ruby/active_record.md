@@ -19,7 +19,7 @@
       #...
     end
 
-    # пеервіряємо чи брудний
+    # перевіряємо чи брудний
     person.first_name = "First Name"
     person.changed?
     
