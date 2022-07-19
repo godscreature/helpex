@@ -109,7 +109,7 @@
     * `AND`
     * `OR`
   * Сортування
-    * `...ORDER BY {column(s)|expression(s)|position} {ASC|DESC}`
+    * `WHERE condition(s) ORDER BY {column(s)|expression(s)|position} {ASC|DESC}`
       * Сортування працює в самому кінці, після обчислень і фільтрації
       * `column(s)` - 1 або кілька колонок, за якими сортувати
       * `expression(s)` - 1 або кілька виразів, за якими сортувати - вказувати або аліас або як вказано в **select list**
@@ -124,8 +124,25 @@
         * `SELECT col1, col2 FROM` - буде обиратися колонка 2 в **select list**
       * `ORDER BY col1 DESC, col5, 2 DESC` - можна комбінувати як завгодно
   * Групування
-    * `...GROUP BY`
+    * `SELECT group-function(s) WHERE condition(s) GROUP BY {column(s)|expression(s)} ORDER BY...`
       * Групування працює в зв'язку з функціями агрегації
+      * Групування виконується після `WHERE`
+      * Групувати можна по значенню функції: `GROUP BY MIN(col1)`
+      * Якщо групуємо по `col1`, то цей `col1` можна використати в SELECT
+      * Можна групувати по кільком колонкам
+    * `GROUP BY column(s)|expression(s) HAVING expression(s)`
+      * Таке саме як `WHERE` тільки для фільтрації в `GROUP BY`
+* **Joining**
+  * `NATURAL JOIN` - об'єднує автоматично по всім колонкам з однаковими назвами
+    * `SELECT ... FROM table1 t1 NATURAL JOIN table2 t2`
+    * Цей джойн дуже дерев'янний, мінусів повно
+    * Вибір колонки автоматичний, не можна вказати колонку по якій зв'язувати
+    * Якщо немає ні одної колонки з однаковою назвою - працює як `CROSS JOIN`
+    * Якщо об'єднує по кільком колонкам - виходить якась дічь
+    * Якщо є одна колонка з однаковою назвою і треба саме по ній об'єднати - тоді відпрацює нормально
+  * `INNER JOIN`
+  * `OUTER JOIN`
+  * `CROSS JOIN`
 
 
 ## Функції
