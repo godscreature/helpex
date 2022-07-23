@@ -213,7 +213,7 @@
     * Інфа з зовнішнього передається у внутрішній запит
     * Виконується внутрішній запит
     * Передається інфа у зовнішній запит, де і порівнюється
-    * `SELECT * FROM table1 t1 WHERE t1.col1 > SELECT AVG(t2.col2) FROM table2 t2 WHERE t2.col2 = t1.col1`
+    * ```sql SELECT * FROM table1 t1 WHERE t1.col1 > SELECT AVG(t2.col2) FROM table2 t2 WHERE t2.col2 = t1.col1```
 
 
 ## Функції
