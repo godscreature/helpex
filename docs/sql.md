@@ -176,44 +176,104 @@
   * Oracle синтаксис
     * `INNER JOIN` - `SELECT ... FROM table1 t1, table2 t2 WHERE t1.col1 = t2.col2`
     * `RIGHT OUTER JOIN` - `SELECT ... FROM table1 t1, table2 t2 WHERE t1.col1(+) = t2.col2`
+* Підзапити
+  * Підзапит це окремий запит, що вкладений всередину основного запита, **inner query**
+  * Працює так само, але запускєаться перед зовнішнім запитом, **outer query**
+  * Підзапит пишеться в дужках
+  * Можна більше 2х рівнів вкладеності
+  * 1 раз виконується і потім результат використовується в **outer query**
+  * Може використовуватися в різних місцях:
+    * В **select list**:
+      * `SELECT col1, (SELECT MIN(col1) FROM table2) AS col2 FROM table1`, можна кілька штук використовувати
+    * В блоці `WHERE`:
+      * `SELECT ... FROM table1 WHERE col1 > (SELECT AVG(col1) FROM table1)`
+      * `SELECT ... FROM table1 WHERE col1 IN (SELECT col1 FROM table2)`
+    * В блоці `FROM`:
+      * `SELECT col1 FORM (SELECT col1, col2 FROM table2 t2 JOIN table3 t3 ON (t2.col2 = t3.col3)) ...`
+      * Типу створюємо свою кастомну таблицю
+      * Після відпрацювання цього запиту ця табличка пропаде
+    * В блоці `HAVING`:
+      * `GROUP BY col1 HAVING MAX(col2) > (SELECT 2*5000)`
+  * Типи:
+    * **single row** - повертає 1 рядок
+      * **scalar** - повертає 1 рядок і 1 колонку
+      * для цього типу можемо використовувати всі варіки які використовуєм для **multiple row**
+    * **multiple row** - повертає більше 1 рядка
+      * якщо для **single row** можна використовувати `=` або `!=`, то для **multiple row** - використовуємо `IN` та `NOT IN`
+      * якщо для **single row** можна використовувати `<` або `>`, то для **multiple row** - використовуємо:
+        * `WHERE col1 > ANY(SELECT col2 FROM table2 WHERE...)` - перевірка "більше котрогось"
+          * `SOME` - аліас для `ANY`
+        * `WHERE col1 > ALL(SELECT col2 FROM table2 WHERE...)` - перевірка "більше будь-якого"
+    * **corellated subquery**
+      * Виконується стільки разів, скільки рядків містить таблиця
+      * По суті виходить як функція з параметрами
+      * Спочатку він запитує необхідну інформацію з **outer select**, отримує її, використовує і потім повертає результат виконання
+      * Зовнішній запит починає виконання
+      * Інфа з зовнішнього передається у внутрішній запит
+      * Виконується внутрішній запит
+      * Передається інфа у зовнішній запит, де і порівнюється
+      * `SELECT * FROM table1 t1 WHERE t1.col1 > SELECT AVG(t2.col2) FROM table2 t2 WHERE t2.col2 = t1.col1`
+* SET оператори
+  * Це оператори для роботи з множинами
+  * `UNION ALL` - об'єднує дві множини
+    * для Oracle SQL - спочатку сортує
+  * `UNION` - об'єднує дві множини, також видаляє дублікати
+    * для Oracle SQL - спочатку сортує
+  * `INTERSECT` - для Oracle SQL - (перетин) спочатку сортує, потім знаходить спільні значення у двох множинах, також видаляє дублікати
+  * `MINUS` - для Oracle SQL - спочатку сортує, потім залишає значення з першої множини, котрих немає у другій множині, також видаляє дублікати
+  * **compound query** - складний запит: `SELECT x FROM table1 UNION SELECT y FROM table2`
+    * Це не **subquery**
+    * Кількість колонок має бути однакова в обох `SELECT`
+    * Типи даних мають співпадати, допускається використання різних типів одного сімейства, наприклад `INTEGER` і `NUMBER`
+    * `ORDER BY` пишеться вкінці обох множин
+* `EXPLAIN` - ця інструкція показує дані про запит, що відбувається, інфа про швидкість виконання, про використання індексів, тощо
+  * `EXPLAIN SELECT * FROM table1 WHERE col1 = '23'`
 
 
-## Підзапити
-* Підзапит це окремий запит, що вкладений всередину основного запита, **inner query**
-* Працює так само, але запускєаться перед зовнішнім запитом, **outer query**
-* Підзапит пишеться в дужках
-* Можна більше 2х рівнів вкладеності
-* 1 раз виконується і потім результат використовується в **outer query**
-* Може використовуватися в різних місцях:
-  * В **select list**:
-    * `SELECT col1, (SELECT MIN(col1) FROM table2) AS col2 FROM table1`, можна кілька штук використовувати
-  * В блоці `WHERE`:
-    * `SELECT ... FROM table1 WHERE col1 > (SELECT AVG(col1) FROM table1)`
-    * `SELECT ... FROM table1 WHERE col1 IN (SELECT col1 FROM table2)`
-  * В блоці `FROM`:
-    * `SELECT col1 FORM (SELECT col1, col2 FROM table2 t2 JOIN table3 t3 ON (t2.col2 = t3.col3)) ...`
-    * Типу створюємо свою кастомну таблицю
-    * Після відпрацювання цього запиту ця табличка пропаде
-  * В блоці `HAVING`:
-    * `GROUP BY col1 HAVING MAX(col2) > (SELECT 2*5000)`
-* Типи:
-  * **single row** - повертає 1 рядок
-    * **scalar** - повертає 1 рядок і 1 колонку
-    * для цього типу можемо використовувати всі варіки які використовуєм для **multiple row**
-  * **multiple row** - повертає більше 1 рядка
-    * якщо для **single row** можна використовувати `=` або `!=`, то для **multiple row** - використовуємо `IN` та `NOT IN`
-    * якщо для **single row** можна використовувати `<` або `>`, то для **multiple row** - використовуємо:
-      * `WHERE col1 > ANY(SELECT col2 FROM table2 WHERE...)` - перевірка "більше котрогось"
-      * `WHERE col1 > ALL(SELECT col2 FROM table2 WHERE...)` - перевірка "більше будь-якого"
-  * **corellated subquery**
-    * Виконується стільки разів, скільки рядків містить таблиця
-    * По суті виходить як функція з параметрами
-    * Спочатку він запитує необхідну інформацію з **outer select**, отримує її, використовує і потім повертає результат виконання
-    * Зовнішній запит починає виконання
-    * Інфа з зовнішнього передається у внутрішній запит
-    * Виконується внутрішній запит
-    * Передається інфа у зовнішній запит, де і порівнюється
-    * `SELECT * FROM table1 t1 WHERE t1.col1 > SELECT AVG(t2.col2) FROM table2 t2 WHERE t2.col2 = t1.col1`
+## INSERT statement
+* Вставляє строку в таблиць
+* `INSERT INTO table1 column(s) VALUES(value(s))`
+  * `INSERT INTO t1 VALUE(val1, val2)`
+    * Якщо не використовуємо назви колонок - маємо вказувати значення для всіх колонок
+  * `INSERT INTO t1 (col1, col2) VALUES(val1, val2)`
+    * Краще завжди вказувати колонки, це хороший тон
+    * Можна вказувати довільну послідовність колонок і відповідно зберігати її в переліку значен
+* Для вказування значень можна використовувати функції `CONCAT()` та вирази `200+300`
+* Для вказування значень можна використовувати підзапити:
+  * `INSERT INTO t1 (col1, col2, col3) (SELECT col1, col2, col3 FROM t2)`
+* Треба дотримуватися всіх **constraint**
+
+
+## UPDATE statement
+* Змінює інформацію в рядках таблиці
+* `UPDATE table1 SET column(s) = value(s) WHERE condition(s)`
+  * `UPDATE t1 SET col1 = val1, col2 = val2 WHERE id = 1`
+* Для вказування значень можна використовувати функції `CONCAT()` та вирази `200+300`
+* Треба дотримуватися всіх **constraint**
+* Можна використовувати підзапити:
+  * `UPDATE t1 SET col1 = val1 WHERE col3 IN (subquery)`
+  * `UPDATE t1 SET col1 = (subquert scalar) WHERE col3 = val3`
+
+
+## DELETE statement
+* Видаляє рядки з таблиці, всі або з урахуванням умови
+* `DELETE FROM table1 WHERE condition(s)`
+  * `DELETE FROM t1 WHERE id = 1` - видаляє рядки, що відповідають умові
+  * `DELETE FROM t1` - видалити всі рядки
+* Можна використовувати підзапити:
+  * `DELETE FROM t1 WHERE col3 = (subquery scalar)`
+  * `DELETE FROM t1 WHERE col3 IN (subquery)`
+
+
+## MERGE statement
+* для Oracle SQL
+* `MERGE INTO t1 USING {t2|subquery} t2 ON (t1.col1 = t2.col2) WHEN MATCHED THEN UPDATE... WHEN NOT MATCHED THE INSERT...`
+* Мерджить дані в таблицю, є можливість наконфігурити що робити коли дані нові і коли дані вже є в таблиці
+  * Наприклад треба залити пачку робітників в таблицю: якщо такий робітник є - то `UPDATE`, якщо немає то `INSERT`
+* Реалізація для MySQL:
+  * `INSERT INTO t1 (id, b, c) VALUES(1, 2, 3) ON DUPLICATE KEY UPDATE b = VALUES(b)`
+  * `id` - це `primary key` - по ньому визначається дублікат чи ні
+  * У разі, якщо дублікат буде виконано `UPDATE` частину, де доступні колонки з `INSERT INTO` та значення з `VALUES`, окрім того, можна якесь своє значення вписати
 
 
 ## Функції
@@ -226,3 +286,113 @@
   * `AVG(col1)` - середнє арифметичне - працює тільки з числами
   * `MIN` і `MAX` - мінімальне і максимальне значення відповідно, працює не тільки з числами
 * Nested функція - вкладена функція, яка слугує параметром для іншої
+
+
+## Transactions
+* `START TRANSACTION`, якісь команди, `COMMIT`
+  * для Oracle SQL - транзакція починається автоматично, коли виконується якась **DML** команда, окрім `SELECT`
+  * Застосувати зміни - `COMMIT`
+  * А якщо зробити `ROLLBACK` - то відміняться всі команди, що були виконані
+    * Якщо десь між командами виконано `SAVEPOINT savepointName`, то `ROLLBACK` відкотить не до початку, а до `SAVEPOINT`
+    * В такому випадку треба виконувати `ROLLBACK TO savepointName`
+* Якщо ми робимо якийсь `INSERT`, то жодний інший юзер не побачить цього, доки ми не зробимо `COMMIT`
+* Транзакція може складатися з 1 або багатьох DML команд
+* Транзакція розпочинається, коли виконуємо `START TRANSACTION`
+* Транзакція закінчується коли виконується `COMMIT` або `ROLLBAKC`
+  * `COMMIT` та `ROLLBACK`, також `SAVEPOINT` - це **TCL** - Transaction Control Language
+* Принципи ACID
+  * **Atomicity** - атомарність - або вся послідовність команд виконується корректно, або якщо щось не виконано - буде відмінено усе
+    * Атом - неподільний, так і транзакція - має бути неподільна
+  * **Consistency** - узгодженість - чи має враховувати наш `SELECT` змінену інформацію? Ні
+    * Consistency значить, що результат запиту повинен був узгоджений зі станом таблиці на момент виконання. 
+  * **Isolation** - ізоляція - я додаю рядки, потім роблю `SELECT` і побачу змінену таблицю, але цю нову інфу побачу тільки я
+    * Інший юзер не буде бачити змін поки я не закрию свою транзакцію, а вірніше видно тільки в моїй сесії
+  * **Durable** - довговічність - якщо транзакція завершена, то зміни будуть доступні усім і ці зміни не можуть бути втрачені
+* `SET autocommit=1;`
+  * автокоміт робить так, що кожна DML команда комітиться автоматично
+  * в такому режимі - треба писати `START TRANSACTION` та `COMMIT` - щоб зробити транзакцію
+* `SET autocommit=0;` якщо автокоміт вимкнено - тоді можна не писати `START TRANSACTION` і кожна DML команда (окрім `SELECT`) відкриває транзакцію
+* `SELECT * FROM table1 FOR UPDATE`
+  * Лочить рядки для інших сесій, якщо в інших сесіях хтось спробує змінити ці рядки, то не вийде, бо рядки залочені
+  * Залочені до тих пір, поки я не закрию транзакцію за допомогою `COMMIT` чи `ROLLBACK`
+  * Інші команди будуть висіть, чекати, поки не завершиться транзакція
+
+
+## Таблиці
+* Створення таблиці
+  * `CREATE TABLE table1 (column datatype {constraint} {AUTO_INCREMENT} {default})`
+    * Створює таблицю
+  * `CREATE table1 AS subquery`
+    * Створює таблицю, беручи схему з **subquery** та наповнює її звідти ж
+    * `CREATE table1 AS (SELECT col1, col2, col3 FROM table2)`
+* Зміна таблиці
+  * `ALTER TABLE table1 {ADD col1|DROP col1|VODIFY col1 datatype|RENAME COLUMN col1 TO col2}`
+    * Змінює таблицю
+    * Додати, видалити, переіменувати: `ADD col1|DROP col1|VODIFY col1 datatype|RENAME COLUMN col1 TO col2`
+    * Змінити не можна, доки висить відкрита транзакція в іншій сесії
+* Очистка таблиці
+  * `TRUNCATE TABLE table1`
+  * Переміщує **highWaterMark** на перший **extend** таблиці і на ноль, тому дуже швидко все видаляє, а не порядково
+  * Видаляє тільки дані, а не структуру
+* Видалення таблиці
+  * `DROP TABLE table1`
+  * Видаляє і дані і саму таблицю (структуру)
+  * Стопається, якщо є відкрита транзакція в іншій сесії
+  * Якщо є рілейтед - то не дасть видалити
+
+
+## Constraint
+* Це використовується для опису бізнес правил - для даних, які містяться в таблиці
+  * `NOT NULL` - не може бути `NULL`
+    * `CREATE TABLE t1 (col1 INT NIT NULL)` - створити таблицю з констрейнтом
+    * `ALTER TABLE t1 MODIFY col1 int NOT NULL` - додавання констрейнту через модифікацію таблиці
+    * `ALTER TABLE t1 MODIFY col1 int NULL` - прибирання констрейнту через модифікацію таблиці
+  * `PRIMARY KEY` - первинний ключ
+    * Поєднання констрейнтів `UNIQUE` та `NOT NULL`
+    * `CREATE TABLE t1 (col1 INT NOT NULL, PRIMARY KEY (col1))` - створити таблицю з ключем
+    * `CREATE TABLE t1 (col1 INT NOT NULL, col2 INT NOT NULL, CONSTRAINT PK_t1 PRIMARY KEY(col1, col2))` - створити таблицю з складним ключем
+    * `ALTER TABLE t1 ADD PRIMARY KEY (col1)` - додавання ключа через модифікацію таблиці
+    * `ALTER TABLE t1 ADD CONSTRAINT PK_t1 PRIMARY KEY (col1, col2)` - **composite constraint**
+    * `ALTER TABLE t1 DROP PRIMARY KEY` - видалення ключа
+  * `FOREIGN KEY` - зовнішній ключ
+    * Колонка таблиці, котра використовується для `FOREIGN KEY` повинна бути `PRIMARY KEY` в своїй таблиці
+    * `CREATE TABLE t1 (id INT NOT NULL, t2_id INT, PRIMARY KEY (id), FOREIGN KEY (t2_id) REFERENCES t2(id))` - додавання зовнішнього ключа
+    * `CREATE TABLE t1 (id INT NOT NULL, t2_id INT, PRIMARY KEY (id), CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id))` - додавання іменованого зовнішнього ключа
+    * `ALTER TABLE t1 ADD FOREIGN KEY (t2_id) REFERENCES t2(id)` - додавання зовнішнього ключа через модифікацію таблиці
+    * `ALTER TABLE t1 ADD CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id)` - додавання іменованого зовнішнього ключа через модифікацію таблиці
+    * `ALTER TABLE t1 DROP FOREIGN KEY FK_t2` - видалення зовнішнього ключа
+    * `CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id) ON DELETE CASCADE` - при видаленні рядка будуть видалятися і відповідні зв'язані рядки
+    * `CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id) ON DELETE SET NULL` - при видаленні рядка відповідні значення у зв'язаній таблиці стануть `NULL`
+    * `CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id) ON UPDATE CASCADE` - при зміні айдішніка він зміниться і в відповідних зв'язаних рядках
+    * `CONSTRAINT FK_t2 FOREIGN KEY (t2_id) REFERENCES t2(id) ON UPDATE SET NULL` - при зміні айдішніка відповідні значення у зв'язаній таблиці стануть `NULL`
+  * `CHECK` - значення в стовпці задовольняють певну умову
+    * `CREATE TABLE t1 (col1 INT NIT NULL, CHECK (col1 >= 18))` - створити таблицю з констрейнтом
+    * `CREATE TABLE t1 (col1 INT NOT NULL, col2 VARCHAR(200), CONSTRAINT CHK_t1 CHECK (col1 >=18 AND col2 = 'Lol'))` - **composite constraint**
+    * `ALTER TABLE t1 ADD CHECK (col1 >= 18)` - додавання констрейнта через модифікацію таблиці
+    * `ALTER TABLE t1 ADD CONSTRAINT CHK_t1 CHECK (col1 >=18 AND col2 = 'Lol')` - **composite constraint**
+    * `ALTER TABLE t1 DROP CHECK CHK_t1` - видалення констрейнту
+  * `UNIQUE` - унікальність значень в стовпці
+    * `CREATE TABLE t1 (col1 INT NOT NULL, col2 VARCHAR(255) NOT NULL, UNIQUE(col1))` - унікальне значення на колонку
+    * `CREATE TABLE t1 (col1 INT NOT NULL, col2 VARCHAR(255) NOT NULL, CONSTRAINT UC_t1 UNIQUE(col1, col2))` - **composite constraint** - унікальна пара
+    * `ALTER TABLE t1 ADD UNIQUE(col1)` - додавання унікального індексу через модифікацію таблиці
+    * `ALTER TABLE t1 ADD CONSTRAINT UC_t1 UNIQUE (col1, col2)` - **composite constraint**
+    * Для цього індексу `NULL` вважається унікальне, вірніше унікальність не працює з `NULL`
+    * `ALTER TABLE t1 DROP INDEX UC_t1` - видалення унікального індексу
+  * `DEFAULT` - встановлює значення за замовчуванням, якщо воно не задане
+    * `CREATE TABLE t1 (col1 VARCHAR(50) DEFAULT 'lol')` - при створенні таблиці можна прописувати констрейнт
+    * `ALTER TABLE t1 ALTER col1 SET DEFAULT 'Lol'` - додавання констрейнту через можифікацію таблиці
+    * `ALTER TABLE t1 ALTER col1 DROP DEFAULT` - видалення констрейнту
+
+
+## Індекси
+* Це специфічні об’єкти бази даних, що дозволяють значно підвищити швидкість пошуку значень з таблиць БД.
+* Індекс – впорядкований набір значень
+* Коли створювати індекси
+  * Коли повільний запит
+  * Коли великий відсоток унікальних значень
+  * Коли в таблиці багато рядків, мінімум кілька тисяч
+* `CREATE {UNIQUE|FULLTEXT|SPATIAL} INDEX idx1 ON table1 (col1)` - створює індекс в таблиці
+  * `CREATE INDEX idx1 ON table1 (col1)` - створити індекс
+  * `CREATE INDEX idx1 ON table1 (col1, col2)` - створити комбінований індекс
+  * `CREATE UNIQUE INDEX idx1 ON t1 (col1, col2)` - створити унікальний індекс
+  * `ALTER TABLE table1 DROP INDEX idx1` - видаляє індекс
