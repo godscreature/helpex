@@ -5,10 +5,10 @@
 ## [Active record](active_record.md)
 
 
-## [Rails](docs/ruby/rails.md)
+## [Rails](rails.md)
 
 
-## [RSpec](docs/ruby/rspec.md)
+## [RSpec](rspec.md)
 
 
-## [Ruby](docs/ruby/ruby.md)
+## [Ruby](ruby.md)
